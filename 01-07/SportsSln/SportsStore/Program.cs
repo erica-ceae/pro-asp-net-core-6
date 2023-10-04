@@ -19,6 +19,15 @@ builder.Services.AddDbContext<AppIdentityDbContext>(options =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>();
 var app = builder.Build();
 
+if (app.Environment.IsProduction()) {
+    app.UseExceptionHandler("/error");
+}
+app.UseRequestLocalization(opts => {
+    opts.AddSupportedCultures("en-GB")
+    .AddSupportedUICultures("en-GB")
+    .SetDefaultCulture("en-GB");
+});
+
 app.UseStaticFiles();
 app.UseSession();
 app.UseAuthentication();
@@ -37,5 +46,6 @@ app.MapBlazorHub();
 app.MapFallbackToPage("/admin/{*catchall}", "/Admin/Index");
 
 SeedData.EnsurePopulated(app);
+IdentitySeedData.EnsurePopulated(app);
 
 app.Run();
