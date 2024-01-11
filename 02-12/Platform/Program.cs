@@ -1,14 +1,12 @@
+using Platform;
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.Use(async (context, next) => {
-    if (context.Request.Method == HttpMethods.Get && context.Request.Query["custom"] == "true") {
-        context.Response.ContentType = "text/plain";
-        await context.Response.WriteAsync("Custom middleware\n");
-    }
-    await next();
+app.MapGet("routing", async context => {
+    await context.Response.WriteAsync("request was routed");
 });
-
-app.MapGet("/", () => "Hello World!");
+app.MapGet("capital/uk", new Capital().Invoke);
+app.MapGet("population/paris", new Population().Invoke);
 
 app.Run();
